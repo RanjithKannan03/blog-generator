@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { sampleBlogs } from '~/data/sampleBlogs'
-
 const route = useRoute()
 const id = route.params.id as string
 const slug = route.params.slug as string
 
-// temp - read from sample data for now
-const blog = sampleBlogs.find((b) => b.id === id)
+const { data } = await useFetch(`/api/blogs/${id}`)
 
-if (!blog) {
+if (!data.value) {
   throw createError({ statusCode: 404, statusMessage: 'Blog not found', fatal: true })
 }
+
+const blog = data.value
 
 if (slug !== blog.slug) {
   await navigateTo(`/blog/${blog.id}/${blog.slug}`, { redirectCode: 301 })

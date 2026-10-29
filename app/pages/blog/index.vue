@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { sampleBlogs } from '~/data/sampleBlogs'
-
 useSeoMeta({
   title: 'Blogs',
   description: 'SEO-optimised blogs generated from company datasets.',
 })
 
-const blogs = ref(sampleBlogs)
+const { data: blogs } = await useFetch('/api/blogs', { default: () => [] })
 </script>
 
 <template>

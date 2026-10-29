@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { sampleBlogs } from '~/data/sampleBlogs'
-
 useSeoMeta({
   title: 'Blog Generator',
   description: 'Turn company datasets into SEO-optimised blog posts.',
@@ -21,7 +19,7 @@ const steps = [
   },
 ]
 
-const blogs = ref(sampleBlogs)
+const { data: blogs } = await useFetch('/api/blogs', { default: () => [] })
 
 const latestBlogs = computed(() => blogs.value.slice(0, 3))
 </script>

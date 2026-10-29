@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import { sampleBlogs } from '~/data/sampleBlogs'
-
 const route = useRoute()
 const id = route.params.id as string
 const slug = route.params.slug as string
 const companySlug = route.params.company as string
 
-// temp - read from sample data for now
-const blog = sampleBlogs.find((b) => b.id === id)
+const { data } = await useFetch(`/api/blogs/${id}`)
+const blog = data.value
 const company = blog?.table?.rows.find((row) => row.slug === companySlug)
 
 if (!blog || !blog.table || !company) {
