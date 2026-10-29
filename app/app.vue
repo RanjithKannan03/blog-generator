@@ -1,6 +1,7 @@
 <template>
-  <div class="overflow-x-hidden">
+  <div class="min-h-screen">
     <NuxtRouteAnnouncer />
+    <AppNavbar />
     <NuxtPage />
   </div>
 </template>

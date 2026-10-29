@@ -1,32 +1,32 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Roboto Condensed", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Stack Sans Headline", ui-sans-serif, system-ui, sans-serif;
 
-  --color-canvas: #f8fafc;
+  --color-canvas: #f3f6f1;
   --color-surface: #ffffff;
-  --color-subtle: #f1f5f9;
+  --color-subtle: #e7eee5;
 
-  --color-ink: #0f172a;
-  --color-ink-muted: #64748b;
+  --color-ink: #132a1f;
+  --color-ink-muted: #56695d;
 
-  --color-primary: #4338ca;
-  --color-primary-hover: #3730a3;
-  --color-primary-soft: #eef2ff;
-  --color-accent: #f59e0b;
-  --color-accent-soft: #fef3c7;
+  --color-primary: #2d6a4f;
+  --color-primary-hover: #1b4332;
+  --color-primary-soft: #e1efe6;
+  --color-accent: #a8691b;
+  --color-accent-soft: #f6ead4;
 
-  --color-success: #15803d;
-  --color-danger: #b91c1c;
-  --color-danger-soft: #fef2f2;
+  --color-success: #2f7d4a;
+  --color-danger: #b42318;
+  --color-danger-soft: #fdecea;
 
-  --color-line: #e2e8f0;
-  --color-ring: #6366f1;
+  --color-line: #d5e0d7;
+  --color-ring: #40916c;
 
   --radius-card: 0.75rem;
-  --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 4px 12px rgb(15 23 42 / 0.06);
-  --shadow-card-hover: 0 2px 4px rgb(15 23 42 / 0.06), 0 12px 24px rgb(15 23 42 / 0.1);
+  --shadow-card: 0 1px 2px rgb(19 42 31 / 0.05), 0 4px 12px rgb(19 42 31 / 0.07);
+  --shadow-card-hover: 0 2px 4px rgb(19 42 31 / 0.07), 0 12px 24px rgb(19 42 31 / 0.12);
 }
 
 @layer base {
