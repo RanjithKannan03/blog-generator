@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { sampleBlogs } from '~/data/sampleBlogs'
+
 useSeoMeta({
   title: 'Blog Generator',
   description: 'Turn company datasets into SEO-optimised blog posts.',
@@ -19,16 +21,7 @@ const steps = [
   },
 ]
 
-// temp placeholder data
-const blogs = ref([
-  {
-    slug: 'top-100-uk-fintech-companies',
-    title: 'Top 100 UK Fintech Companies by Funding (2026)',
-    category: 'Fintech',
-    rowCount: 100,
-    createdAt: '2026-10-29T10:00:00Z',
-  },
-])
+const blogs = ref(sampleBlogs)
 
 const latestBlogs = computed(() => blogs.value.slice(0, 3))
 </script>
@@ -89,7 +82,7 @@ const latestBlogs = computed(() => blogs.value.slice(0, 3))
       </div>
 
       <ul v-if="latestBlogs.length" class="flex flex-col gap-4 md:flex-row md:gap-6">
-        <BlogCard v-for="blog in latestBlogs" :key="blog.slug" v-bind="blog" class="md:w-1/3" />
+        <BlogCard v-for="blog in latestBlogs" :key="blog.id" :blog="blog" class="md:w-1/3" />
       </ul>
 
       <div v-else class="card flex flex-col items-start gap-3">
