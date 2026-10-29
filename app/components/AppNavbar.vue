@@ -8,6 +8,11 @@ const links = [
 const menuOpen = ref(false)
 const route = useRoute()
 
+// Home only matches "/", other links also match their child pages (e.g. /blog/...)
+function isActive(to: string) {
+  return route.path === to || (to !== '/' && route.path.startsWith(`${to}/`))
+}
+
 watch(
   () => route.fullPath,
   () => {
@@ -28,12 +33,17 @@ watch(
         Blog Generator
       </NuxtLink>
 
-      <ul class="hidden items-center gap-8 md:flex">
+      <ul class="hidden items-center gap-2 md:flex lg:gap-3">
         <li v-for="link in links" :key="link.to">
           <NuxtLink
             :to="link.to"
-            class="text-sm font-medium text-ink-muted hover:text-ink hover:no-underline md:text-base lg:text-lg xl:text-xl"
-            exact-active-class="!text-primary"
+            :aria-current="isActive(link.to) ? 'page' : undefined"
+            class="rounded-full px-3 py-1.5 text-sm hover:no-underline md:text-base lg:px-4 lg:py-2 lg:text-lg xl:text-xl"
+            :class="
+              isActive(link.to)
+                ? 'bg-primary-soft font-semibold text-primary'
+                : 'font-medium text-ink-muted hover:bg-subtle hover:text-ink'
+            "
           >
             {{ link.label }}
           </NuxtLink>
@@ -77,13 +87,18 @@ watch(
     <ul
       v-show="menuOpen"
       id="mobile-menu"
-      class="space-y-1 px-6 pb-3 lef-0 top-full w-full absolute z-20 bg-canvas md:hidden"
+      class="space-y-1 px-6 pb-3 left-0 top-full w-full absolute z-20 bg-canvas md:hidden"
     >
       <li v-for="link in links" :key="link.to">
         <NuxtLink
           :to="link.to"
-          class="inline-block rounded-lg px-3 py-2 text-lg font-medium text-ink-muted hover:bg-subtle hover:text-ink hover:no-underline sm:px-4 sm:py-2.5 sm:text-xl"
-          exact-active-class="!text-primary bg-primary-soft"
+          class="inline-block rounded-lg px-3 py-2 text-lg hover:no-underline sm:px-4 sm:py-2.5 sm:text-xl"
+          :aria-current="isActive(link.to) ? 'page' : undefined"
+          :class="
+            isActive(link.to)
+              ? 'bg-primary-soft font-semibold text-primary'
+              : 'font-medium text-ink-muted hover:bg-subtle hover:text-ink'
+          "
         >
           {{ link.label }}
         </NuxtLink>
