@@ -18,21 +18,21 @@ Open http://localhost:3000.
 
 ### Environment variables
 
-| Variable | Required | Default | Purpose |
-|---|---|---|---|
-| `NUXT_GEMINI_API_KEY` | For AI copy | (none) | Free key from [Google AI Studio](https://aistudio.google.com) |
-| `NUXT_GEMINI_MODEL` | No | `gemini-3.5-flash-lite` | Which Gemini model writes the copy |
-| `NUXT_LLM_PROVIDER` | No | auto | `gemini` or `stub`. Empty = Gemini when a key is set, otherwise the stub |
+| Variable              | Required    | Default                 | Purpose                                                                  |
+| --------------------- | ----------- | ----------------------- | ------------------------------------------------------------------------ |
+| `NUXT_GEMINI_API_KEY` | For AI copy | (none)                  | Free key from [Google AI Studio](https://aistudio.google.com)            |
+| `NUXT_GEMINI_MODEL`   | No          | `gemini-3.5-flash-lite` | Which Gemini model writes the copy                                       |
+| `NUXT_LLM_PROVIDER`   | No          | auto                    | `gemini` or `stub`. Empty = Gemini when a key is set, otherwise the stub |
 
 Without a key the app still works: the **stub** writes simple copy from the statistics instead of calling the AI. All statistics, the ranking table and company pages are identical either way.
 
 ### Scripts
 
-| Command | What it does |
-|---|---|
-| `bun run dev` | Start the dev server |
-| `bun run reset` | Clear Nuxt's caches **and delete all saved blogs** (`data/`), then start the dev server |
-| `bun run build` / `bun run preview` | Production build / preview it |
+| Command                             | What it does                                                                            |
+| ----------------------------------- | --------------------------------------------------------------------------------------- |
+| `bun run dev`                       | Start the dev server                                                                    |
+| `bun run reset`                     | Clear Nuxt's caches **and delete all saved blogs** (`data/`), then start the dev server |
+| `bun run build` / `bun run preview` | Production build / preview it                                                           |
 
 ## How to use
 
@@ -94,7 +94,7 @@ Upload page ──POST /api/upload──▶ parse CSV ─▶ detect columns ─�
 - **The AI is called once per blog, at upload time.** The result is saved, so blog pages are instant for every visitor and never depend on the AI being available.
 - **Numbers are calculated in code, never by the AI.** `stats.ts` computes totals, medians, breakdowns and per-industry figures, with sanity checks (e.g. breakdown counts must add up to the number of companies). The AI only writes prose around those numbers, which are passed to it already formatted.
 - **The AI returns structured JSON, not HTML.** Gemini fills `title`, `metaDescription`, `introduction` and `sections` via a JSON schema. The Vue template owns all HTML, so semantic markup and heading order are guaranteed, and AI text is always rendered as escaped text (never `v-html`).
-- **Column detection makes it reusable.** `csv.ts` gives every column a *type* from its values (`text`, `number`, `money`, `range`, `list`, `url`) and picks four *roles* from header words plus type (`name`, `rank`, `metric`, `description`), with value-based fallbacks. The table, statistics, company pages and the AI prompt all use these instead of column names.
+- **Column detection makes it reusable.** `csv.ts` gives every column a _type_ from its values (`text`, `number`, `money`, `range`, `list`, `url`) and picks four _roles_ from header words plus type (`name`, `rank`, `metric`, `description`), with value-based fallbacks. The table, statistics, company pages and the AI prompt all use these instead of column names.
 - **Storage** uses Nitro's `useStorage` with the `fs` driver: one JSON file per blog plus an `index.json` of summaries for the list pages. Moving to serverless hosting only needs a different driver (e.g. Upstash or Netlify Blobs) in `nuxt.config.ts`; no code changes.
 
 ### Project structure
@@ -156,18 +156,15 @@ The reply is validated in code (lengths, no empty sections, no HTML/Markdown). I
 
 ## Tools used
 
-| Tool | Purpose |
-|---|---|
-| Nuxt 4, Vue 3, TypeScript | Framework, server rendering, API routes |
-| Tailwind CSS v4 | Styling, with a small design-token theme |
-| Papa Parse | CSV parsing |
-| Google Gemini API (free tier) | Blog copy, using structured JSON output |
-| Nitro storage (`fs` driver) | Saving blogs as JSON |
-| Claude Code | AI coding assistant (see below) |
+| Tool                          | Purpose                                  |
+| ----------------------------- | ---------------------------------------- |
+| Nuxt 4, Vue 3, TypeScript     | Framework, server rendering, API routes  |
+| Tailwind CSS v4               | Styling, with a small design-token theme |
+| Papa Parse                    | CSV parsing                              |
+| Google Gemini API (free tier) | Blog copy, using structured JSON output  |
+| Nitro storage (`fs` driver)   | Saving blogs as JSON                     |
 
-**How I used AI:** I hadn't used Vue or Nuxt before, so I used Claude Code as a pair programmer while learning, comparing each Vue/Nuxt concept with its React/Next.js equivalent. I made the product, architecture and SEO decisions, such as one blog per CSV, id + slug URLs with 301 redirects, JSON-only AI output, stats calculated in code, and keeping SEO content server-rendered. I questioned and changed its suggestions, for example checking that statistics add up, how multi-value industry columns should be counted, how employee ranges should sort, and whether tabs would hide content from search engines. Much of the code was written by the assistant and reviewed by me step by step; the commit history shows the build stage by stage.
-
-Free-tier note: Google may use content sent to the Gemini free tier to improve its products. That's acceptable here because the data is public company information.
+**How I used AI:** I hadn't used Vue or Nuxt before, so I used Claude while learning and coding, comparing each Vue/Nuxt concept with its React/Next.js equivalent. I made the product, architecture and SEO decisions, such as one blog per CSV, id + slug URLs with 301 redirects, JSON-only AI output, stats calculated in code, and keeping SEO content server-rendered. I questioned and changed its suggestions, for example checking that statistics add up, how multi-value industry columns should be counted, how employee ranges should sort, and whether tabs would hide content from search engines.
 
 ## Time
 
