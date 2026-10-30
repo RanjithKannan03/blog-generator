@@ -83,7 +83,7 @@ function metricHighlights(
   return highlights
 }
 
-// one value per company (Region, Employees…): counts always add up to the number of companies
+// one value per company (Region, Employees…)
 function singleValueBreakdown(rows: CompanyRow[], column: TableColumn): StatBreakdown | null {
   const counts = new Map<string, number>()
   let unknown = 0
@@ -142,12 +142,19 @@ function grouping(
   return {
     label: listColumn.label,
     groups: tags.map((tag) => {
-      const groupRows = rows.filter((row) => (row.values[listColumn.key] as string[] | null)?.includes(tag.label))
+      const groupRows = rows.filter((row) =>
+        (row.values[listColumn.key] as string[] | null)?.includes(tag.label),
+      )
       const summary = summarise(groupRows, table.metricKey)
       return {
         label: tag.label,
         highlights: [
-          { label: 'Companies', value: summary.count, format: 'number', note: `${summary.count} of the top ${rows.length}` },
+          {
+            label: 'Companies',
+            value: summary.count,
+            format: 'number',
+            note: `${summary.count} of the top ${rows.length}`,
+          },
           ...metricHighlights(summary, table, metricColumn, format),
         ],
       }
@@ -179,7 +186,9 @@ export function buildStats(table: BlogTable): BlogStats {
   }
 
   // biggest share of the first breakdown, e.g. "London: 78%"
-  const first = breakdowns[0]?.items.find((item) => item.label !== 'Unknown' && item.label !== 'Other')
+  const first = breakdowns[0]?.items.find(
+    (item) => item.label !== 'Unknown' && item.label !== 'Other',
+  )
   if (first && breakdowns[0]) {
     highlights.push({
       label: first.label,
@@ -207,12 +216,18 @@ export function buildStats(table: BlogTable): BlogStats {
   // sanity checks: every number must be consistent with the rows it came from
   const values = numbers(rows, table.metricKey)
   if (values.length) {
-    check(Math.min(...values) <= summary.median && summary.median <= Math.max(...values), 'Median is outside the range of values.')
+    check(
+      Math.min(...values) <= summary.median && summary.median <= Math.max(...values),
+      'Median is outside the range of values.',
+    )
   }
   for (const breakdown of breakdowns) {
     if (breakdown.note) continue
     const sum = breakdown.items.reduce((total, item) => total + item.count, 0)
-    check(sum === rows.length, `“${breakdown.label}” counts ${sum} companies instead of ${rows.length}.`)
+    check(
+      sum === rows.length,
+      `“${breakdown.label}” counts ${sum} companies instead of ${rows.length}.`,
+    )
   }
   for (const group of statGrouping?.groups ?? []) {
     const total = group.highlights.find((h) => h.label.startsWith('Total'))?.value ?? 0

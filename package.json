@@ -5,7 +5,7 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
-    "reset": "nuxt cleanup && nuxt dev",
+    "reset": "nuxt cleanup && node -e \"require('fs').rmSync('data', { recursive: true, force: true })\" && nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"

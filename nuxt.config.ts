@@ -13,17 +13,22 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         {
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;600;700&family=Stack+Sans+Headline:wght@500;600;700&display=swap'
-        }
-      ]
-    }
+          href: 'https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;600;700&family=Stack+Sans+Headline:wght@500;600;700&display=swap',
+        },
+      ],
+    },
   },
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+  },
+  runtimeConfig: {
+    llmProvider: '',
+    geminiApiKey: '',
+    geminiModel: 'gemini-3.5-flash-lite',
   },
   nitro: {
     storage: {
-      blogs: { driver: 'fs', base: './data/blogs' }
-    }
-  }
+      blogs: { driver: 'fs', base: './data/blogs' },
+    },
+  },
 })
