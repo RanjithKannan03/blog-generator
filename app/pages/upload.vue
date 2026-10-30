@@ -44,7 +44,7 @@ async function onSubmit() {
     const blog = await $fetch<{ id: string; slug: string }>('/api/upload', { method: 'POST', body })
     await navigateTo(`/blog/${blog.id}/${blog.slug}`)
   } catch (error) {
-    const message = (error as { data?: { statusMessage?: string } }).data?.statusMessage
+    const message = (error as { data?: { message?: string } }).data?.message
     showError(message ?? 'Something went wrong while generating the blog. Please try again.')
   }
 }
