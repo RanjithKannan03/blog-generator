@@ -15,7 +15,9 @@ if (slug !== blog.slug) {
   await navigateTo(`/blog/${blog.id}/${blog.slug}`, { redirectCode: 301 })
 }
 
-const canonicalUrl = `${useRequestURL().origin}/blog/${blog.id}/${blog.slug}`
+const origin = useRequestURL().origin
+const blogPath = `/blog/${blog.id}/${blog.slug}`
+const canonicalUrl = `${origin}${blogPath}`
 
 useSeoMeta({
   title: blog.title,
@@ -33,7 +35,46 @@ useHead({
 const metricLabel = blog.table?.columns.find((c) => c.key === blog.table?.metricKey)?.label
 const rankingCaption = `${blog.rowCount} ${blog.category} companies ranked by ${metricLabel?.toLowerCase() ?? 'rank'}`
 
-const publishedDate =new Date(blog.createdAt).toLocaleDateString('en-GB', { dateStyle: 'long' })
+const publishedDate = new Date(blog.createdAt).toLocaleDateString('en-GB', { dateStyle: 'long' })
+
+const table = blog.table
+useHead({
+  script: [
+    jsonLdScript([
+      {
+        '@type': 'Article',
+        headline: blog.title,
+        description: blog.metaDescription,
+        datePublished: blog.createdAt,
+        dateModified: blog.createdAt,
+        inLanguage: 'en-GB',
+        mainEntityOfPage: canonicalUrl,
+        about: `${blog.category} companies`,
+      },
+      ...(table
+        ? [
+            {
+              '@type': 'ItemList',
+              name: rankingCaption,
+              numberOfItems: table.rows.length,
+              itemListOrder: 'https://schema.org/ItemListOrderAscending',
+              itemListElement: table.rows.map((row) => ({
+                '@type': 'ListItem',
+                position: row.values[table.rankKey],
+                name: String(row.values[table.nameKey]),
+                url: `${canonicalUrl}/${row.slug}`,
+              })),
+            },
+          ]
+        : []),
+      breadcrumbs(origin, [
+        { name: 'Home', path: '/' },
+        { name: 'Blog', path: '/blog' },
+        { name: blog.title, path: blogPath },
+      ]),
+    ]),
+  ],
+})
 </script>
 
 <template>
@@ -51,7 +92,11 @@ const publishedDate =new Date(blog.createdAt).toLocaleDateString('en-GB', { date
         <p class="text-lg text-ink-muted md:text-xl">{{ blog.introduction }}</p>
       </header>
 
-      <section id="key-statistics" aria-labelledby="key-statistics-heading" class="flex flex-col gap-6">
+      <section
+        id="key-statistics"
+        aria-labelledby="key-statistics-heading"
+        class="flex flex-col gap-6"
+      >
         <h2 id="key-statistics-heading" class="text-2xl font-bold md:text-3xl">Key statistics</h2>
 
         <StatisticsPanel :highlights="blog.stats.highlights" :grouping="blog.stats.grouping" />

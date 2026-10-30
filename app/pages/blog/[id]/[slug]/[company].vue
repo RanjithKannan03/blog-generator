@@ -40,7 +40,8 @@ const metaDescription =
   description ??
   `${name} is ranked #${rank} in ${blog.title}.`
 
-const canonicalUrl = `${useRequestURL().origin}${blogPath}/${company.slug}`
+const origin = useRequestURL().origin
+const canonicalUrl = `${origin}${blogPath}/${company.slug}`
 
 useSeoMeta({
   title: `${name}: #${rank} ${blog.category} company`,
@@ -52,6 +53,22 @@ useSeoMeta({
 
 useHead({
   link: [{ rel: 'canonical', href: canonicalUrl }],
+  script: [
+    jsonLdScript([
+      {
+        '@type': 'Organization',
+        name,
+        ...(description ? { description } : {}),
+        ...(website ? { url: website } : {}),
+      },
+      breadcrumbs(origin, [
+        { name: 'Home', path: '/' },
+        { name: 'Blog', path: '/blog' },
+        { name: blog.title, path: blogPath },
+        { name, path: `${blogPath}/${company.slug}` },
+      ]),
+    ]),
+  ],
 })
 </script>
 
