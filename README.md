@@ -31,7 +31,7 @@ Without a key the app still works: the **stub** writes simple copy from the stat
 | Command                             | What it does                                                                            |
 | ----------------------------------- | --------------------------------------------------------------------------------------- |
 | `bun run dev`                       | Start the dev server                                                                    |
-| `bun run reset`                     | Clear Nuxt's caches **and delete all saved blogs** (`data/`), then start the dev server |
+| `bun run reset`                     | Clear Nuxt's caches **and delete all saved blogs** (`data/`), then start the dev server. Restore the committed example blog with `git restore data` |
 | `bun run build` / `bun run preview` | Production build / preview it                                                           |
 
 ## How to use
@@ -41,6 +41,8 @@ Without a key the app still works: the **stub** writes simple copy from the stat
 3. You are redirected to the new blog at `/blog/<id>/<slug>`. Every company name in the ranking table links to its own page.
 
 All blogs are listed on **Blog** and the newest on the home page. Each upload creates a new blog; nothing is overwritten.
+
+The repo includes one generated example, the fintech blog in `data/blogs/`, created through the upload pipeline with Gemini, so it's visible straight after cloning without an API key.
 
 ## Screenshots
 
@@ -129,6 +131,8 @@ SEO is handled in two layers: **technical SEO is guaranteed by the template**, a
 - **Semantic HTML.** `<main>`, `<article>`, `<header>`, `<section>` with `aria-labelledby`, `<nav>`, one `<h1>` per page with `<h2>`/`<h3>` in order, `<time datetime>`, `<figure>`/`<figcaption>` for breakdowns, `<dl>` for company facts, and a real `<table>` with `<caption>`, `<th scope="col">` and `<th scope="row">`.
 - **Metadata on every page** via `useSeoMeta`: a unique `<title>` and meta description on the home, blog list and upload pages, and on every blog and company page.
 - **Blog and company pages** also have Open Graph tags (title, description, URL, type) for link previews and a canonical URL.
+- **Structured data (JSON-LD)** using schema.org: blog pages describe an `Article`, the ranking as an `ItemList` (position, company name and link for every company) and a `BreadcrumbList`; company pages describe an `Organization` and a `BreadcrumbList`. CSV text inside it is escaped so it can't break out of the script tag.
+- **`/sitemap.xml`** is generated from the saved blogs and lists the home page, the blog list, every blog and every company page; **`/robots.txt`** allows crawling and points to the sitemap.
 - **Clean, keyword-rich URLs:** `/blog/k7p2x9qa/top-100-fintech-companies/capsa-ai`. Blogs are looked up by id; if the slug in the URL is wrong or out of date, the page **301-redirects** to the canonical URL, so every blog has exactly one indexable address.
 - **Internal links:** home → blog list → blog → every company → back to the ranking.
 - **Accessibility**, which overlaps with SEO: labelled form fields, visible focus styles, `aria-current` on the active nav link, screen-reader text for icon buttons, `<html lang="en-GB">`.
@@ -174,7 +178,7 @@ The brief estimates 2–3 hours. This took longer because I was learning Vue and
 
 - **Database:** JSON files are simple and transparent but don't support querying or concurrent writes (two uploads finishing at the same moment could race on `index.json`). A database such as Postgres would fix both.
 - **Hosting:** the `fs` driver needs a writable disk; for serverless hosting, swap to a hosted storage driver.
-- **Structured data:** add JSON-LD (`Article` + `ItemList` for the ranking, `Organization` for company pages), an FAQ section and a `sitemap.xml`.
+- **More SEO:** an FAQ section (with `FAQPage` structured data).
 - **Regenerate / edit:** protected by an admin token, replacing a blog only after the new copy passes validation; the id + slug URLs already keep old links working if the title changes.
 - **Batch uploads:** process many CSVs through a queue with rate limiting to stay within AI limits.
 - **Column override:** let the uploader change the detected ranking metric if detection guesses wrong.

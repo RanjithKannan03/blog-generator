@@ -34,6 +34,3 @@ CLAUDE.local.md
 *.pdf
 *-plan.md
 *.csv
-
-# Saved blogs (seeded with sample data for now)
-/data/
