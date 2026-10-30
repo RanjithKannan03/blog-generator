@@ -28,7 +28,11 @@ export async function writeCopy(input: CopyInput): Promise<BlogCopy> {
 
   if (provider === 'stub') return stubCopy(input)
   if (!config.geminiApiKey) {
-    throw createError({ statusCode: 500, statusMessage: 'AI not configured', message: 'NUXT_GEMINI_API_KEY is not set.' })
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'AI not configured',
+      message: 'NUXT_GEMINI_API_KEY is not set.',
+    })
   }
   return geminiCopy(input, config.geminiApiKey, config.geminiModel)
 }
@@ -66,12 +70,13 @@ function valueText(value: CellValue | undefined, format: StatFormat | 'text') {
   return String(value).slice(0, 200)
 }
 
-// a compact, numbers-already-formatted summary: the model never has to calculate or format anything
 function datasetSummary({ category, table, stats }: CopyInput) {
   const metric = table.columns.find((column) => column.key === table.metricKey)!
   const format: StatFormat = metric.type === 'money' ? 'money' : 'number'
   const extraColumns = table.columns.filter(
-    (column) => ![table.rankKey, table.nameKey, table.metricKey].includes(column.key) && column.type !== 'url',
+    (column) =>
+      ![table.rankKey, table.nameKey, table.metricKey].includes(column.key) &&
+      column.type !== 'url',
   )
 
   return {
@@ -151,7 +156,8 @@ const looksLikeMarkup = (text: string) => /<[a-z/!][^>]*>|\*\*|^#{1,6}\s/im.test
 
 function lengthProblems(copy: BlogCopy) {
   const problems: string[] = []
-  if (copy.title.length > TITLE_MAX) problems.push(`title is ${copy.title.length} characters, max ${TITLE_MAX}`)
+  if (copy.title.length > TITLE_MAX)
+    problems.push(`title is ${copy.title.length} characters, max ${TITLE_MAX}`)
   if (copy.metaDescription.length > META_MAX) {
     problems.push(`metaDescription is ${copy.metaDescription.length} characters, max ${META_MAX}`)
   }
@@ -164,9 +170,12 @@ function contentProblems(copy: unknown): string[] {
 
   const problems: string[] = []
   if (typeof c.title !== 'string' || !c.title.trim()) problems.push('title is empty')
-  if (typeof c.metaDescription !== 'string' || !c.metaDescription.trim()) problems.push('metaDescription is empty')
-  if (typeof c.introduction !== 'string' || !c.introduction.trim()) problems.push('introduction is empty')
-  if (!Array.isArray(c.sections) || c.sections.length < 2) problems.push('there must be at least 2 sections')
+  if (typeof c.metaDescription !== 'string' || !c.metaDescription.trim())
+    problems.push('metaDescription is empty')
+  if (typeof c.introduction !== 'string' || !c.introduction.trim())
+    problems.push('introduction is empty')
+  if (!Array.isArray(c.sections) || c.sections.length < 2)
+    problems.push('there must be at least 2 sections')
 
   for (const section of c.sections ?? []) {
     if (!section?.heading?.trim()) problems.push('a section heading is empty')
@@ -175,7 +184,12 @@ function contentProblems(copy: unknown): string[] {
     }
   }
 
-  const allText = [c.title, c.metaDescription, c.introduction, ...(c.sections ?? []).flatMap((s) => [s?.heading, ...(s?.paragraphs ?? [])])]
+  const allText = [
+    c.title,
+    c.metaDescription,
+    c.introduction,
+    ...(c.sections ?? []).flatMap((s) => [s?.heading, ...(s?.paragraphs ?? [])]),
+  ]
   if (allText.some((text) => typeof text === 'string' && looksLikeMarkup(text))) {
     problems.push('use plain text only, no HTML or Markdown')
   }
@@ -184,7 +198,10 @@ function contentProblems(copy: unknown): string[] {
 
 function trimTo(text: string, max: number) {
   if (text.length <= max) return text
-  return text.slice(0, max + 1).replace(/\s+\S*$/, '').replace(/[\s,;:–-]+$/, '')
+  return text
+    .slice(0, max + 1)
+    .replace(/\s+\S*$/, '')
+    .replace(/[\s,;:–-]+$/, '')
 }
 
 function clean(copy: BlogCopy): BlogCopy {
@@ -229,7 +246,8 @@ async function callGemini(input: CopyInput, apiKey: string, model: string, feedb
     const candidate = response.candidates?.[0]
     const text = candidate?.content?.parts?.map((part) => part.text ?? '').join('') ?? ''
     if (!text) {
-      const reason = response.promptFeedback?.blockReason ?? candidate?.finishReason ?? 'no text returned'
+      const reason =
+        response.promptFeedback?.blockReason ?? candidate?.finishReason ?? 'no text returned'
       return { copy: null, problems: [`the AI returned no content (${reason})`] }
     }
 
@@ -251,7 +269,8 @@ async function callGemini(input: CopyInput, apiKey: string, model: string, feedb
       throw createError({
         statusCode: 502,
         statusMessage: 'AI request rejected',
-        message: 'The AI service rejected the request. Check NUXT_GEMINI_API_KEY and NUXT_GEMINI_MODEL.',
+        message:
+          'The AI service rejected the request. Check NUXT_GEMINI_API_KEY and NUXT_GEMINI_MODEL.',
       })
     }
     if (status === 404) {
@@ -286,7 +305,11 @@ async function geminiCopy(input: CopyInput, apiKey: string, model: string): Prom
   // content is fine but a title or description is slightly long: trim rather than fail
   if (lastCopy) {
     const copy = clean(lastCopy)
-    return { ...copy, title: trimTo(copy.title, TITLE_MAX), metaDescription: trimTo(copy.metaDescription, META_MAX) }
+    return {
+      ...copy,
+      title: trimTo(copy.title, TITLE_MAX),
+      metaDescription: trimTo(copy.metaDescription, META_MAX),
+    }
   }
 
   throw createError({
